@@ -1,6 +1,6 @@
 { super, eachSystem }:
 let
-  renamerHiveExports = super.pops.hive.setNixosConfigurationsRenamer "asd";
+  renamerHiveExports = (super.pops.hive.setNixosConfigurationsRenamer "asd").setHomeConfigurationsRenamer "myHm";
 in
 {
   inherit (super.pops.hive.exports)
@@ -12,6 +12,7 @@ in
   inherit (super) pops;
 
   renamerNixosConfigurations = renamerHiveExports.exports.nixosConfigurations;
+  myHm = renamerHiveExports.exports.homeConfigurations;
 
   data = super.pops.data.exports.default;
   overlays = super.pops.eachSystem.packages.x86_64-linux.exports.overlays;
