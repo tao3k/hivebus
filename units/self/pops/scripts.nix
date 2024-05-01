@@ -3,7 +3,7 @@
   inputs,
   projectRoot,
 }:
-omnibus.pops.scripts.addLoadExtender {
+(omnibus.pops.scripts.addLoadExtender {
   load = {
     src = projectRoot + /units/scripts;
     inputs = {
@@ -13,4 +13,4 @@ omnibus.pops.scripts.addLoadExtender {
       };
     };
   };
-}
+})
