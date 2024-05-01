@@ -2,6 +2,7 @@
   omnibus,
   inputs,
   projectRoot,
+  root,
 }:
 omnibus.pops.load {
   src = projectRoot + /hosts;

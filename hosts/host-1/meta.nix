@@ -6,6 +6,7 @@
   lib,
   self,
   inputs,
+  nixosModules,
 }:
 {
   colmena = {
@@ -16,9 +17,11 @@
     bee.pkgs = import nixos-unstable { system = self.system; };
     bee.system = self.system;
     bee.home = inputs.omnibus.flake.inputs.home-manager;
-    imports = [ inputs.omnibus.flake.inputs.disko.nixosModules.default ];
+    imports = [
+      inputs.self.nixosProfiles.presets.boot
+      inputs.omnibus.flake.inputs.disko.nixosModules.default
+    ];
   };
-  asd = self.nixosConfiguration;
   colmenaConfiguration = {
     deployment = {
       allowLocalDeployment = true;

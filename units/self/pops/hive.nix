@@ -1,1 +1,1 @@
-{ omnibus, super }: omnibus.pops.hive.setHosts super.hosts.exports.default
+{ inputs, super }: inputs.omnibus.pops.hive.setHosts super.hosts.exports.default
