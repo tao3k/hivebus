@@ -1,0 +1,162 @@
+#+TITLE: README
+#+AUTHOR: GuangTao Zhang
+#+EMAIL: gtrunsec@hardenedlinux.org
+#+DATE: 2024-07-25 Thu 01:38
+
+
+Since the core code of hivebus uses and draws inspiration from the [[https://github.com/blaggacao][@blaggacao]]'s [[https://github.com/divnix/hive][hive]] , please read and understand the blog of [[https://primamateria.github.io/blog/hive/#the-hive][primamateria-hive]] before starting.
+
+
+‼️ If you want to learn the core code of hivebus, please read [[https://github.com/tao3k/omnibus/tree/main/src/hive][omnibus-hive]]
+
+
+
+* What are the differences from Hive?
+
+ 1. hive based on the ~std~ file structures.
+ 2. hivebus use ~inputs.omnibus.pops.hive.setHosts~ to export the target configuration.
+ 3. Hivebus is more flexible; you can use different functions to load the corresponding configuration modules, like building blocks. Unlike a predefined framework, it does not restrict you.
+
+
+* pops.hive
+
+The core functionality of pops.hive involves exporting a set of hosts with specific attribute sets to different target configuration systems. It also uses the [[https://primamateria.github.io/blog/hive/#bee-module][beeModule]] to transmit the necessary inputs required by the target systems.
+
+#+begin_src nix
+let
+  inherit (inputs) nixpkgs;
+  hosts = {
+    host1 = rec {
+      colmena = {
+        nixpkgs = { };
+      };
+      system = "x86_64-linux";
+      nixosConfiguration = {
+        bee.pkgs = import nixpkgs { system = system; };
+        bee.system = system;
+        imports = [ omnibus.flake.inputs.disko.nixosModules.default ];
+      };
+      asd = nixosConfiguration;
+      colmenaConfiguration = {
+        deployment = {
+          allowLocalDeployment = true;
+          targetHost = "127.0.0.1";
+        };
+        inherit (nixosConfiguration) bee imports;
+      };
+    };
+    host2 = rec {
+      colmena = {
+        nixpkgs = { };
+      };
+      system = "aarch64-linux";
+      darwinConfiguration = {
+        bee.darwin = omnibus.flake.inputs.darwin;
+        bee.system = system;
+        bee.pkgs = import nixpkgs { system = system; };
+      };
+
+      homeConfiguration = {
+        bee.system = system;
+        bee.pkgs = import nixpkgs { system = system; };
+        bee.home = omnibus.flake.inputs.home-manager;
+      };
+    };
+  };
+  hivePop =
+    ((omnibus.pops.hive.setHosts hosts).addInputs {
+      inherit (omnibus.flake.inputs) colmena nixpkgs;
+    }).setNixosConfigurationsRenamer
+      "asd";
+  inherit (hivePop.exports) darwinConfigurations colmenaHive;
+in
+{
+  inherit hivePop darwinConfigurations colmenaHive;
+}
+#+end_src
+
+** pops.hive.set{targetSystemRenamer}
+the ~pops.hive.set{targetSystemRenamer}~ uses a POP style to modify the renamer of the target configuration. This renamer specifies which attribute set will be used to collect and load configurations into the target export system.
+
+For example, in ~host1~, we renamed ~nixosConfiguration~  to ~asd{...}~ as the ~specified configuration~ to be loaded for the target configuration 'nixosConfiguration'."
+
+#+begin_src nix
+{
+  hosts.host1 = rec {
+    nixosConfiguration = {
+      bee.pkgs = import nixpkgs { system = system; };
+      bee.system = system;
+      imports = [ omnibus.flake.inputs.disko.nixosModules.default ];
+    };
+    asd = nixosConfiguration;
+  };
+  hiveExporter = (omnibus.pops.hive.setHosts.hosts).setNixosConfigurationsRenamer "asd";
+}
+#+end_src
+
+Of course, you can specify multiple hiveExporters to collect and export target configurations under different attribute sets.
+
+#+begin_src nix
+hiveDarwinExporter = (omnibus.pops.hive.setHosts.hosts).setDarwinConfigurationsRenamer "myDarwin"
+
+hiveHomeExporter = (omnibus.pops.hive.setHosts.hosts).setHomeConfigurationsRenamer "myHome"
+#+end_src
+
+** Simplify configuration interface
+
+Compared to the traditional ~{nixos, darwin,...}Configurations~ loading method, pops.hive only requires a set of hosts' attribute sets to load the corresponding attribute set into the respective configuration interface. Additionally, it utilizes a clean eval-config mode.
+
+#+begin_src nix
+{
+  hosts.{simple,...}.nixosConfiguration = { bee = {...}; imports = [];};
+  hiveExporter = (pops.hive.setHosts hosts).exports.nixosConfigurations;
+  # =>
+  simple = hiveExporter.simple;
+
+  nixosConfigurations.simple = inputs.nixos-unstable.lib.nixosSystem {
+    system = "x86_64-linux";
+    modules = [ ];
+  };
+  homeConfigurations.simple = inputs.home-manager.lib.homeManagerConfiguration {
+    pkgs = inputs.nixos-unstable.legacyPackages.x86_64-linux;
+    modules = [ ];
+  };
+}
+#+end_src
+
+
+* Available exporter of target system
+
+- nixosConfigurations
+- darwinConfigurations
+- homeConfigurations
+
+  AttrSet -> home-manager.lib.homeManagerConfiguration -> homeManagerConfiguration
+
+  #+begin_src nix
+{
+  homeConfiguration = {
+        bee.system = system;
+        bee.pkgs = import nixpkgs { system = system; };
+        bee.home = omnibus.flake.inputs.home-manager;
+      };
+}
+  #+end_src
+- colmenaHive
+  - https://github.com/zhaofengli/colmena
+
+    #+begin_src nix
+{
+  colmenaConfiguration = {
+    deployment = {
+      allowLocalDeployment = true;
+      targetHost = "127.0.0.1";
+    };
+    bee = {
+      pkgs = import nixpkgs { system = system; };
+      colmena = inputs.colmena;
+    };
+    imports = [ ];
+  };
+}
+    #+end_src
