@@ -7,7 +7,7 @@ in
     nixosConfigurations
     darwinConfigurations
     colmenaHive
-    homeConfiguraitons
+    homeConfigurations
     ;
   inherit (super) pops;
 
