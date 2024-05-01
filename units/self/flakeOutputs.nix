@@ -1,4 +1,4 @@
-{ super }:
+{ super, eachSystem }:
 {
   inherit (super.pops.hive.exports)
     nixosConfigurations
@@ -7,4 +7,7 @@
     homeConfiguraitons
     ;
   inherit (super) pops;
+
+  data = super.pops.data.exports.default;
 }
+// super.eachSystem

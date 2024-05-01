@@ -11,7 +11,7 @@
   };
 
   outputs =
-    { self, ... }@inputs:
+    inputs:
     let
       inherit (inputs.omnibus.inputs.flops.inputs.nixlib) lib;
       eachSystem = lib.genAttrs [
