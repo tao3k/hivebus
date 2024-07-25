@@ -2,20 +2,19 @@
 # SPDX-FileCopyrightText: 2024 The omnibus Authors
 #
 # SPDX-License-Identifier: MIT
-
-{
-  callPackage,
-  lib,
-  stdenv,
-  fetchurl,
-  nixos,
-  testers,
-  hello,
+{ callPackage
+, lib
+, stdenv
+, fetchurl
+, nixos
+, testers
+, versionCheckHook
+, hello
 }:
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "hello";
-  version = "2.12.1-custom";
+  version = "2.12.1";
 
   src = fetchurl {
     url = "mirror://gnu/hello/hello-${finalAttrs.version}.tar.gz";
@@ -24,22 +23,18 @@ stdenv.mkDerivation (finalAttrs: {
 
   doCheck = true;
 
-  passthru.tests = {
-    version = testers.testVersion { package = hello; };
+  doInstallCheck = true;
+  nativeInstallCheckInputs = [
+    versionCheckHook
+  ];
 
-    invariant-under-noXlibs =
-      testers.testEqualDerivation
-        "hello must not be rebuilt when environment.noXlibs is set."
-        hello
-        (nixos { environment.noXlibs = true; }).pkgs.hello;
-  };
-
-  passthru.tests.run = callPackage ./test.nix {
-    hello = finalAttrs.finalPackage;
-  };
+  # Give hello some install checks for testing purpose.
+  postInstallCheck = ''
+    stat "''${!outputBin}/bin/${finalAttrs.meta.mainProgram}"
+  '';
 
   meta = with lib; {
-    description = "A program that produces a familiar, friendly greeting";
+    description = "Program that produces a familiar, friendly greeting";
     longDescription = ''
       GNU Hello is a program that prints "Hello, world!" when you run it.
       It is fully customizable.
@@ -48,6 +43,7 @@ stdenv.mkDerivation (finalAttrs: {
     changelog = "https://git.savannah.gnu.org/cgit/hello.git/plain/NEWS?h=v${finalAttrs.version}";
     license = licenses.gpl3Plus;
     maintainers = [ maintainers.eelco ];
+    mainProgram = "hello";
     platforms = platforms.all;
   };
 })
