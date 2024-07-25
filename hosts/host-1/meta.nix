@@ -20,6 +20,15 @@
     imports = [
       inputs.self.nixosProfiles.presets.boot
       inputs.omnibus.flake.inputs.disko.nixosModules.default
+      {
+        fileSystems."/" = {
+          device = "/dev/disk/by-label/nixos";
+        };
+        boot.loader = {
+          systemd-boot.enable = true;
+          efi.canTouchEfiVariables = true;
+        };
+      }
     ];
   };
   colmenaConfiguration = {
