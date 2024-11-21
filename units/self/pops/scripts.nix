@@ -9,7 +9,7 @@
     inputs = {
       inputs = inputs // {
         makesSrc = omnibus.flake.inputs.makesSrc;
-        climodSrc = omnibus.flake.inputs.climodSrc;
+        pogSrc = omnibus.flake.inputs.pogSrc;
       };
     };
   };
