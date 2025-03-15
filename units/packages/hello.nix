@@ -2,14 +2,15 @@
 # SPDX-FileCopyrightText: 2024 The omnibus Authors
 #
 # SPDX-License-Identifier: MIT
-{ callPackage
-, lib
-, stdenv
-, fetchurl
-, nixos
-, testers
-, versionCheckHook
-, hello
+{
+  callPackage,
+  lib,
+  stdenv,
+  fetchurl,
+  nixos,
+  testers,
+  versionCheckHook,
+  hello,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
