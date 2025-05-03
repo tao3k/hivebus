@@ -1,10 +1,10 @@
 {
-  eachSystem,
+  supportedSystems,
   super,
   inputs,
   lib,
 }:
-lib.mapAttrs (_: v: eachSystem v) {
+lib.mapAttrs (_: v: supportedSystems v) {
   scripts =
     system:
     (super.scripts.addLoadExtender {

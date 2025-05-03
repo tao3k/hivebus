@@ -1,16 +1,16 @@
 {
-  eachSystem,
+  supportedSystems,
   super,
   inputs,
   lib,
 }:
-lib.mapAttrs (_: v: eachSystem v) {
-  scripts = system: super.pops.eachSystem.scripts.${system}.exports.default;
-  apps = system: super.pops.eachSystem.scripts.${system}.exports.apps;
-  data = system: super.pops.eachSystem.data.${system}.exports.default;
+lib.mapAttrs (_: v: supportedSystems v) {
+  scripts = system: super.pops.supportedSystems.scripts.${system}.exports.default;
+  apps = system: super.pops.supportedSystems.scripts.${system}.exports.apps;
+  data = system: super.pops.supportedSystems.data.${system}.exports.default;
   packages =
     system:
-    super.pops.eachSystem.packages.${system}.exports.derivations
+    super.pops.supportedSystems.packages.${system}.exports.derivations
     // {
     };
 }

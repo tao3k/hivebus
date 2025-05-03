@@ -14,13 +14,13 @@
     inputs:
     let
       inherit (inputs.omnibus.inputs.flops.inputs.nixlib) lib;
-      eachSystem = lib.genAttrs [
+      supportedSystems = lib.genAttrs [
         "x86_64-linux"
         "x86_64-darwin"
         "aarch64-linux"
         "aarch64-darwin"
       ];
-      pops.hivebus = import ./units/self { inherit inputs eachSystem; };
+      pops.hivebus = import ./units/self { inherit inputs supportedSystems; };
       hivebus = pops.hivebus.exports.default;
     in
     lib.recursiveUpdate { inherit pops; } hivebus.flakeOutputs;

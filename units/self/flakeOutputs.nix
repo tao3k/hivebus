@@ -1,4 +1,4 @@
-{ super, eachSystem }:
+{ super, supportedSystems }:
 let
   renamerHiveExports = (super.pops.hive.setNixosConfigurationsRenamer "asd").setHomeConfigurationsRenamer "myHm";
 in
@@ -15,10 +15,10 @@ in
   myHm = renamerHiveExports.exports.homeConfigurations;
 
   data = super.pops.data.exports.default;
-  overlays = super.pops.eachSystem.packages.x86_64-linux.exports.overlays;
+  overlays = super.pops.supportedSystems.packages.x86_64-linux.exports.overlays;
 
   nixosProfiles = super.pops.nixosProfiles.exports.default;
   nixosModules = super.pops.nixosModules.exports.default;
   hosts = super.pops.hosts.exports.default;
 }
-// super.eachSystem
+// super.supportedSystems

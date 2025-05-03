@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-{ inputs, eachSystem }:
+{ inputs, supportedSystems }:
 let
   inherit (inputs.omnibus.lib.haumea) removeTopDefault;
 in
@@ -11,7 +11,7 @@ in
   src = ./.;
   transformer = [ removeTopDefault ];
   inputs = {
-    inherit inputs eachSystem;
+    inherit inputs supportedSystems;
     projectRoot = ../..;
   };
 })
