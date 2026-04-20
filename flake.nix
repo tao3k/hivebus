@@ -13,7 +13,7 @@
   outputs =
     inputs:
     let
-      inherit (inputs.omnibus.inputs.flops.inputs.nixlib) lib;
+      lib = inputs.omnibus.inputs.flops.popflow.nixlib;
       supportedSystems = lib.genAttrs [
         "x86_64-linux"
         "x86_64-darwin"

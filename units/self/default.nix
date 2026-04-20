@@ -5,7 +5,7 @@
 
 { inputs, supportedSystems }:
 let
-  inherit (inputs.omnibus.lib.haumea) removeTopDefault;
+  inherit (inputs.omnibus.inputs.flops.lib.haumea) removeTopDefault;
 in
 (inputs.omnibus.pops.load {
   src = ./.;
